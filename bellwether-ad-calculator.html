@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facebook Ad ROI Calculator — Bellwether Creative Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #13213a;
+      --navy-2: #1b2e52;
+      --gold:   #ebb04a;
+      --gold-2: #f1ca78;
+      --cream:  #fdf9f3;
+      --cream-2:#f5efe3;
+      --white:  #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #7a7a7a;
+      --border: #e0d6c5;
+      --shadow: 0 4px 24px rgba(19,33,58,0.10);
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--navy);
+      padding: 28px 40px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-mark {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(45deg, var(--gold), var(--gold-2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--navy);
+      letter-spacing: -1px;
+      flex-shrink: 0;
+    }
+    .header-title {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+    .header-sub {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.72rem;
+      color: var(--gold-2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .header-badge {
+      background: rgba(235,176,74,0.15);
+      border: 1px solid rgba(235,176,74,0.35);
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gold-2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── HERO STRIP ── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy-2) 0%, var(--navy) 100%);
+      padding: 40px 40px 36px;
+      border-bottom: 3px solid var(--gold);
+    }
+    .hero h1 {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      color: var(--white);
+      font-weight: 700;
+      line-height: 1.2;
+      max-width: 640px;
+    }
+    .hero h1 span {
+      color: var(--gold);
+    }
+    .hero p {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.65);
+      margin-top: 10px;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 36px 24px 60px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 740px) {
+      .layout { grid-template-columns: 1fr; }
+      header { padding: 20px 20px 18px; }
+      .hero { padding: 28px 20px 24px; }
+      main { padding: 24px 16px 48px; }
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      background: var(--navy);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(45deg, var(--gold), var(--gold-2));
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .card-header h2 {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.01em;
+    }
+    .card-body {
+      padding: 24px;
+    }
+
+    /* ── INPUTS ── */
+    .field {
+      margin-bottom: 22px;
+    }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--navy);
+      margin-bottom: 7px;
+    }
+    .label-hint {
+      font-size: 0.72rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gold);
+      pointer-events: none;
+      font-family: 'Libre Baskerville', Georgia, serif;
+    }
+    .input-suffix {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 13px 14px 13px 34px;
+      border: 2px solid var(--border);
+      border-radius: 9px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--navy);
+      background: var(--cream);
+      outline: none;
+      transition: border-color 0.18s, background 0.18s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus {
+      border-color: var(--gold);
+      background: var(--white);
+    }
+    input[type="number"].no-prefix {
+      padding-left: 14px;
+    }
+    input[type="number"].has-suffix {
+      padding-right: 42px;
+    }
+
+    /* ── SLIDER ── */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .slider-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 42px;
+      text-align: center;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 8px rgba(235,176,74,0.45);
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 8px rgba(235,176,74,0.45);
+      cursor: pointer;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── ASSUMPTIONS TOGGLE ── */
+    .assumptions-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      padding: 0;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .assumptions-toggle-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--navy);
+      flex: 1;
+    }
+    .assumptions-toggle-hint {
+      font-size: 0.7rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+    .toggle-arrow {
+      width: 22px;
+      height: 22px;
+      background: var(--cream-2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.22s, background 0.18s;
+      flex-shrink: 0;
+    }
+    .toggle-arrow svg {
+      transition: transform 0.22s;
+    }
+    .assumptions-toggle.open .toggle-arrow {
+      background: var(--gold);
+    }
+    .assumptions-toggle.open .toggle-arrow svg path {
+      stroke: var(--navy);
+    }
+    .assumptions-toggle.open .toggle-arrow svg {
+      transform: rotate(180deg);
+    }
+    .assumptions-body {
+      display: none;
+      margin-top: 16px;
+    }
+    .assumptions-body.open { display: block; }
+
+    /* ── RESULTS ── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .result-tile {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 16px 18px;
+      transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+    }
+    .result-tile.highlight {
+      background: var(--navy);
+      border-color: var(--navy);
+      grid-column: span 2;
+    }
+    .result-tile.gold-tile {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+      border-color: var(--gold);
+      grid-column: span 2;
+    }
+    .result-tile.animate {
+      animation: pulse 0.35s ease;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .tile-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .result-tile.highlight .tile-label { color: rgba(255,255,255,0.55); }
+    .result-tile.gold-tile .tile-label  { color: rgba(19,33,58,0.65); }
+
+    .tile-value {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.1;
+    }
+    .result-tile.highlight .tile-value { color: var(--gold); font-size: 2rem; }
+    .result-tile.gold-tile .tile-value  { color: var(--navy); font-size: 2rem; }
+
+    .tile-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .result-tile.highlight .tile-sub { color: rgba(255,255,255,0.45); }
+    .result-tile.gold-tile .tile-sub  { color: rgba(19,33,58,0.55); }
+
+    /* ── ROAS BAR ── */
+    .roas-bar-wrap {
+      background: rgba(255,255,255,0.18);
+      border-radius: 30px;
+      height: 8px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .result-tile.highlight .roas-bar-wrap { background: rgba(255,255,255,0.1); }
+    .roas-bar-fill {
+      height: 100%;
+      border-radius: 30px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+      transition: width 0.55s cubic-bezier(.4,0,.2,1);
+      min-width: 4px;
+    }
+    .result-tile.highlight .roas-bar-fill {
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+    }
+    .result-tile.gold-tile .roas-bar-fill {
+      background: rgba(19,33,58,0.25);
+    }
+
+    /* ── BREAKDOWN TABLE ── */
+    .breakdown {
+      margin-top: 14px;
+      border-radius: 9px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+    }
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      padding: 11px 16px;
+      font-size: 0.85rem;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-row:nth-child(odd) { background: var(--cream); }
+    .breakdown-row:nth-child(even) { background: var(--white); }
+    .breakdown-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-navy  { background: var(--navy); }
+    .dot-gold  { background: var(--gold); }
+    .breakdown-desc { flex: 1; color: var(--text); font-weight: 500; }
+    .breakdown-val  { font-weight: 700; color: var(--navy); font-family: 'Libre Baskerville', Georgia, serif; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      text-align: center;
+      padding: 20px 24px;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.05em;
+    }
+    footer strong { color: var(--gold-2); font-weight: 600; }
+
+    /* ── RESET BUTTON ── */
+    .reset-btn {
+      margin-top: 18px;
+      width: 100%;
+      padding: 12px;
+      background: none;
+      border: 2px solid var(--border);
+      border-radius: 9px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.18s, color 0.18s;
+    }
+    .reset-btn:hover {
+      border-color: var(--gold);
+      color: var(--navy);
+    }
+
+    /* ── SCENARIO LABEL ── */
+    .scenario-label-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .scenario-label-wrap input[type="text"] {
+      flex: 1;
+      padding: 9px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+      background: var(--cream);
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .scenario-label-wrap input[type="text"]:focus {
+      border-color: var(--gold);
+      background: var(--white);
+    }
+    .scenario-icon {
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <div class="logo-mark">B</div>
+    <div>
+      <div class="header-title">Bellwether Creative Co.</div>
+      <div class="header-sub">Senior Living Marketing Tools</div>
+    </div>
+  </div>
+  <div class="header-badge">Facebook Ads ROI Simulator</div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Facebook Ad <span>ROI Simulator</span><br>for Senior Living Operators</h1>
+  <p>Adjust your ad spend and lifetime values below to instantly project leads, move-ins, and return on investment.</p>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="layout">
+
+    <!-- LEFT: INPUTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">⚙️</div>
+        <h2>Your Scenario</h2>
+      </div>
+      <div class="card-body">
+
+        <!-- Scenario Name -->
+        <div class="scenario-label-wrap">
+          <span class="scenario-icon">📋</span>
+          <input type="text" id="scenarioName" value="My Scenario" placeholder="Name this scenario…" />
+        </div>
+
+        <!-- Ad Spend -->
+        <div class="field">
+          <label>Monthly Ad Spend</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" id="adSpend" value="3000" min="100" max="100000" step="100" />
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">$500</span>
+            <input type="range" id="adSpendSlider" min="500" max="30000" step="250" value="3000" />
+            <span class="slider-label">$30k</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- LTV Long-Term -->
+        <div class="field">
+          <label>LTV — Long-Term Resident <span class="label-hint">lifetime value</span></label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" id="ltvLong" value="75000" min="1000" max="1000000" step="1000" />
+          </div>
+        </div>
+
+        <!-- LTV Short-Term -->
+        <div class="field">
+          <label>LTV — Short-Term Stay <span class="label-hint">respite / short-term</span></label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" id="ltvShort" value="8000" min="500" max="100000" step="500" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ASSUMPTIONS TOGGLE -->
+        <button class="assumptions-toggle" id="assumptionsToggle">
+          <span class="assumptions-toggle-label">
+            Adjust Assumptions
+            <span class="assumptions-toggle-hint">industry defaults pre-filled</span>
+          </span>
+          <div class="toggle-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 4L6 8L10 4" stroke="#13213a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <div class="assumptions-body" id="assumptionsBody">
+
+          <!-- CPL -->
+          <div class="field" style="margin-top:16px;">
+            <label>Cost Per Lead (CPL) <span class="label-hint">avg. senior living ~$65–$120</span></label>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input type="number" id="cpl" value="85" min="10" max="500" step="5" />
+            </div>
+          </div>
+
+          <!-- Lead-to-Move-In Rate -->
+          <div class="field">
+            <label>Lead → Move-In Rate <span class="label-hint">industry avg. ~4–8%</span></label>
+            <div class="input-wrap">
+              <input type="number" id="convRate" value="5" min="0.5" max="50" step="0.5" class="no-prefix has-suffix" />
+              <span class="input-suffix">%</span>
+            </div>
+          </div>
+
+          <!-- Resident Mix -->
+          <div class="field">
+            <label>Long-Term Resident Mix <span class="label-hint">of all move-ins</span></label>
+            <div class="input-wrap">
+              <input type="number" id="ltMix" value="70" min="0" max="100" step="5" class="no-prefix has-suffix" />
+              <span class="input-suffix">%</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-label">0%</span>
+              <input type="range" id="ltMixSlider" min="0" max="100" step="5" value="70" />
+              <span class="slider-label">100%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="reset-btn" id="resetBtn">↺ Reset to Defaults</button>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: RESULTS -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">📊</div>
+          <h2 id="resultsTitle">Projected Results</h2>
+        </div>
+        <div class="card-body">
+
+          <div class="results-grid">
+
+            <!-- Annual Revenue — Hero Tile -->
+            <div class="result-tile highlight" id="tileAnnualRev">
+              <div class="tile-label">Projected Annual Revenue</div>
+              <div class="tile-value" id="valAnnualRev">—</div>
+              <div class="tile-sub" id="subAnnualRev">from move-ins generated by ads</div>
+              <div class="roas-bar-wrap" style="margin-top:12px;">
+                <div class="roas-bar-fill" id="roasBarRevenue" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- ROAS -->
+            <div class="result-tile gold-tile" id="tileROAS">
+              <div class="tile-label">Return on Ad Spend</div>
+              <div class="tile-value" id="valROAS">—</div>
+              <div class="tile-sub" id="subROAS">per $1 spent on ads</div>
+            </div>
+
+            <!-- Monthly Revenue -->
+            <div class="result-tile" id="tileMonthlyRev">
+              <div class="tile-label">Monthly Revenue</div>
+              <div class="tile-value" id="valMonthlyRev">—</div>
+              <div class="tile-sub">projected per month</div>
+            </div>
+
+            <!-- Leads -->
+            <div class="result-tile" id="tileLeads">
+              <div class="tile-label">Est. Leads / Month</div>
+              <div class="tile-value" id="valLeads">—</div>
+              <div class="tile-sub">from Facebook ads</div>
+            </div>
+
+            <!-- Move-Ins -->
+            <div class="result-tile" id="tileMoveIns">
+              <div class="tile-label">Est. Move-Ins / Month</div>
+              <div class="tile-value" id="valMoveIns">—</div>
+              <div class="tile-sub" id="subMoveIns">long-term + short-term</div>
+            </div>
+
+            <!-- Cost per Acquisition -->
+            <div class="result-tile" id="tileCPA">
+              <div class="tile-label">Cost Per Move-In</div>
+              <div class="tile-value" id="valCPA">—</div>
+              <div class="tile-sub">cost per acquisition</div>
+            </div>
+
+          </div>
+
+          <!-- BREAKDOWN TABLE -->
+          <div class="breakdown" id="breakdown" style="margin-top:20px;">
+            <div class="breakdown-row">
+              <div class="breakdown-dot dot-navy"></div>
+              <div class="breakdown-desc">Long-Term Move-Ins / mo.</div>
+              <div class="breakdown-val" id="bdLT">—</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="breakdown-dot dot-gold"></div>
+              <div class="breakdown-desc">Short-Term Move-Ins / mo.</div>
+              <div class="breakdown-val" id="bdST">—</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="breakdown-dot" style="background:#ccc;"></div>
+              <div class="breakdown-desc">Annual Ad Spend</div>
+              <div class="breakdown-val" id="bdAnnualSpend">—</div>
+            </div>
+            <div class="breakdown-row">
+              <div class="breakdown-dot dot-navy"></div>
+              <div class="breakdown-desc">Annual Net Revenue (after spend)</div>
+              <div class="breakdown-val" id="bdNet">—</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  Built by <strong>Bellwether Creative Co.</strong> &nbsp;|&nbsp; bellwethercreativeco.com &nbsp;|&nbsp; For internal planning purposes. Projections are estimates based on industry benchmarks.
+</footer>
+
+<script>
+  // ── STATE ──
+  const DEFAULTS = {
+    adSpend: 3000,
+    ltvLong: 75000,
+    ltvShort: 8000,
+    cpl: 85,
+    convRate: 5,
+    ltMix: 70
+  };
+
+  // ── ELEMENTS ──
+  const els = {
+    adSpend:      document.getElementById('adSpend'),
+    adSpendSlider:document.getElementById('adSpendSlider'),
+    ltvLong:      document.getElementById('ltvLong'),
+    ltvShort:     document.getElementById('ltvShort'),
+    cpl:          document.getElementById('cpl'),
+    convRate:     document.getElementById('convRate'),
+    ltMix:        document.getElementById('ltMix'),
+    ltMixSlider:  document.getElementById('ltMixSlider'),
+    scenarioName: document.getElementById('scenarioName'),
+    resultsTitle: document.getElementById('resultsTitle'),
+    resetBtn:     document.getElementById('resetBtn'),
+    assumptionsToggle: document.getElementById('assumptionsToggle'),
+    assumptionsBody:   document.getElementById('assumptionsBody'),
+  };
+
+  // ── FORMAT HELPERS ──
+  const fmt = (n) => n >= 1000
+    ? '$' + (n >= 1000000 ? (n/1000000).toFixed(n%1000000===0?0:1)+'M' : n >= 10000 ? '$' + (n/1000).toFixed(0)+'K' : n.toLocaleString())
+    : '$' + n.toFixed(0);
+
+  function fmtDollar(n) {
+    if (n >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
+    if (n >= 10000)   return '$' + Math.round(n / 1000) + 'K';
+    if (n >= 1000)    return '$' + n.toLocaleString('en-US', {maximumFractionDigits: 0});
+    return '$' + n.toFixed(0);
+  }
+
+  function fmtNum(n) {
+    if (n < 1) return n.toFixed(2);
+    if (n < 10) return n.toFixed(1);
+    return Math.round(n).toLocaleString();
+  }
+
+  // ── CALCULATE ──
+  function calculate() {
+    const spend    = parseFloat(els.adSpend.value)   || 0;
+    const ltvLong  = parseFloat(els.ltvLong.value)   || 0;
+    const ltvShort = parseFloat(els.ltvShort.value)  || 0;
+    const cpl      = parseFloat(els.cpl.value)        || 1;
+    const convRate = parseFloat(els.convRate.value)   || 0;
+    const ltMix    = parseFloat(els.ltMix.value)      || 0;
+    const stMix    = 100 - ltMix;
+
+    const leadsPerMonth    = spend / cpl;
+    const moveInsPerMonth  = leadsPerMonth * (convRate / 100);
+    const ltMoveIns        = moveInsPerMonth * (ltMix / 100);
+    const stMoveIns        = moveInsPerMonth * (stMix / 100);
+    const monthlyRevenue   = (ltMoveIns * ltvLong) + (stMoveIns * ltvShort);
+    const annualRevenue    = monthlyRevenue * 12;
+    const annualSpend      = spend * 12;
+    const roas             = spend > 0 ? monthlyRevenue / spend : 0;
+    const cpa              = moveInsPerMonth > 0 ? spend / moveInsPerMonth : 0;
+    const netRevenue       = annualRevenue - annualSpend;
+
+    // Fill results
+    set('valAnnualRev',  fmtDollar(annualRevenue));
+    set('subAnnualRev',  `based on ${fmtNum(moveInsPerMonth * 12)} move-ins / year`);
+    set('valROAS',       roas.toFixed(1) + 'x');
+    set('subROAS',       roas >= 1 ? `$${roas.toFixed(2)} returned per $1 spent` : 'Below breakeven — adjust inputs');
+    set('valMonthlyRev', fmtDollar(monthlyRevenue));
+    set('valLeads',      fmtNum(leadsPerMonth));
+    set('valMoveIns',    fmtNum(moveInsPerMonth));
+    set('subMoveIns',    `${fmtNum(ltMoveIns)} long-term + ${fmtNum(stMoveIns)} short-term`);
+    set('valCPA',        cpa > 0 ? fmtDollar(cpa) : '—');
+    set('bdLT',          fmtNum(ltMoveIns));
+    set('bdST',          fmtNum(stMoveIns));
+    set('bdAnnualSpend', fmtDollar(annualSpend));
+    set('bdNet',         fmtDollar(netRevenue));
+
+    // ROAS bar: cap visual at 20x = 100%
+    const roasPct = Math.min((roas / 20) * 100, 100);
+    document.getElementById('roasBarRevenue').style.width = roasPct + '%';
+
+    // Color net revenue
+    const bdNetEl = document.getElementById('bdNet');
+    bdNetEl.style.color = netRevenue >= 0 ? 'var(--navy)' : '#c0392b';
+
+    // Animate tiles
+    ['tileAnnualRev','tileROAS','tileMonthlyRev','tileLeads','tileMoveIns','tileCPA'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('animate');
+      void el.offsetWidth;
+      el.classList.add('animate');
+    });
+
+    // Update results title with scenario name
+    const name = els.scenarioName.value.trim();
+    els.resultsTitle.textContent = name ? `Results: ${name}` : 'Projected Results';
+  }
+
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  // ── SYNC SLIDERS ──
+  els.adSpend.addEventListener('input', () => {
+    els.adSpendSlider.value = els.adSpend.value;
+    calculate();
+  });
+  els.adSpendSlider.addEventListener('input', () => {
+    els.adSpend.value = els.adSpendSlider.value;
+    calculate();
+  });
+  els.ltMix.addEventListener('input', () => {
+    els.ltMixSlider.value = els.ltMix.value;
+    calculate();
+  });
+  els.ltMixSlider.addEventListener('input', () => {
+    els.ltMix.value = els.ltMixSlider.value;
+    calculate();
+  });
+
+  // ── ALL OTHER INPUTS ──
+  ['ltvLong','ltvShort','cpl','convRate'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calculate);
+  });
+  els.scenarioName.addEventListener('input', calculate);
+
+  // ── ASSUMPTIONS TOGGLE ──
+  els.assumptionsToggle.addEventListener('click', () => {
+    const isOpen = els.assumptionsBody.classList.toggle('open');
+    els.assumptionsToggle.classList.toggle('open', isOpen);
+  });
+
+  // ── RESET ──
+  els.resetBtn.addEventListener('click', () => {
+    Object.entries(DEFAULTS).forEach(([k, v]) => {
+      const el = document.getElementById(k);
+      if (el) el.value = v;
+    });
+    els.adSpendSlider.value = DEFAULTS.adSpend;
+    els.ltMixSlider.value   = DEFAULTS.ltMix;
+    els.scenarioName.value  = 'My Scenario';
+    calculate();
+  });
+
+  // ── INIT ──
+  calculate();
+</script>
+</body>
+</html>
